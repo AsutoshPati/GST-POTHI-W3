@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST POTHI W3 — Digital Trust Ledger</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:      #1B2A4A;
+    --ink-soft: #3C4A68;
+    --paper:    #F2ECDA;
+    --paper-2:  #E9E0C8;
+    --line:     #D8CDA8;
+    --gold:     #A97C28;
+    --gold-dim: #C9A257;
+    --seal:     #2F6F52;
+    --seal-bg:  #E4EEE6;
+    --rust:     #9C3B2E;
+    --rust-bg:  #F3E3DF;
+    --serif: 'Fraunces', serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(27,42,74,0.035) 28px);
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:14px;
+    min-height:100vh;
+  }
+
+  ::selection{ background:var(--gold-dim); color:var(--ink); }
+
+  /* ---------- masthead ---------- */
+  header.masthead{
+    padding:36px 40px 22px;
+    border-bottom:3px double var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:20px;
+  }
+  .wordmark{ display:flex; flex-direction:column; gap:2px; }
+  .wordmark .eyebrow{ font-size:11px; letter-spacing:.08em; color:var(--gold); }
+  .wordmark h1{
+    font-family:var(--serif); font-optical-sizing:auto; font-weight:600;
+    font-size:38px; margin:0; color:var(--ink); letter-spacing:.01em;
+  }
+  .wordmark .sub{ font-size:12px; color:var(--ink-soft); max-width:46ch; line-height:1.5; }
+
+  /* the seal - our one signature element */
+  .seal{
+    width:84px; height:84px; border-radius:50%;
+    border:2px solid var(--ink); position:relative; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-size:11px; text-align:center; line-height:1.3;
+    background:radial-gradient(circle at 35% 30%, #fff8, transparent 60%), var(--paper-2);
+  }
+  .seal::before{
+    content:''; position:absolute; inset:6px; border-radius:50%;
+    border:1px dashed var(--ink-soft);
+  }
+  .seal.valid{ color:var(--seal); border-color:var(--seal); }
+  .seal.valid::before{ border-color:var(--seal); }
+  .seal.invalid{ color:var(--rust); border-color:var(--rust); animation:shake .4s; }
+  .seal.invalid::before{ border-color:var(--rust); }
+  @keyframes shake{ 0%,100%{transform:rotate(0);} 25%{transform:rotate(-4deg);} 75%{transform:rotate(4deg);} }
+
+  .header-stats{ display:flex; gap:28px; align-items:center; }
+  .stat{ text-align:right; }
+  .stat .n{ font-family:var(--serif); font-size:22px; font-weight:600; color:var(--ink); }
+  .stat .l{ font-size:10px; color:var(--ink-soft); letter-spacing:.04em; }
+
+  /* ---------- tabs ---------- */
+  nav.tabs{
+    display:flex; gap:2px; padding:0 40px; border-bottom:1px solid var(--line);
+    background:var(--paper-2); flex-wrap:wrap;
+  }
+  nav.tabs button{
+    background:none; border:none; color:var(--ink-soft); font-family:var(--mono);
+    font-size:12.5px; padding:13px 20px; cursor:pointer;
+    border-bottom:3px solid transparent; transition:.15s;
+  }
+  nav.tabs button:hover{ color:var(--ink); }
+  nav.tabs button.active{ color:var(--ink); border-bottom-color:var(--gold); font-weight:700; }
+
+  /* ---------- layout ---------- */
+  main{ display:grid; grid-template-columns:380px 1fr; gap:0; }
+  @media (max-width: 980px){ main{grid-template-columns:1fr;} }
+  .col-forms{ padding:26px; border-right:1px solid var(--line); }
+  .col-view{ padding:26px 34px; }
+
+  .card{
+    background:var(--paper); border:1px solid var(--line); border-radius:3px;
+    padding:20px; margin-bottom:20px; position:relative;
+  }
+  .card h3{
+    margin:0 0 6px; font-family:var(--serif); font-size:18px; font-weight:600; color:var(--ink);
+  }
+  .card .desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:14px; }
+
+  label{ display:block; font-size:11px; color:var(--ink-soft); margin:10px 0 4px; }
+  input, select, textarea{
+    width:100%; background:#fff; border:1px solid var(--line); color:var(--ink);
+    padding:8px 10px; border-radius:2px; font-family:var(--mono); font-size:12.5px;
+  }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--gold); }
+  textarea{ resize:vertical; min-height:48px; }
+
+  .item-row{ display:grid; grid-template-columns:1.6fr .7fr .9fr .6fr auto; gap:6px; margin-top:8px; align-items:end; }
+  .item-row input{ font-size:11.5px; padding:7px 8px; }
+  .item-row button.remove{
+    background:none; border:1px solid var(--rust); color:var(--rust); border-radius:2px;
+    padding:7px 9px; cursor:pointer; font-family:var(--mono); font-size:11px;
+  }
+  button.add-row{
+    margin-top:8px; background:none; border:1px dashed var(--ink-soft); color:var(--ink-soft);
+    padding:7px 12px; border-radius:2px; cursor:pointer; font-family:var(--mono); font-size:11.5px; width:100%;
+  }
+  button.add-row:hover{ border-color:var(--gold); color:var(--gold); }
+
+  button.action{
+    margin-top:14px; width:100%; background:var(--ink); color:var(--paper); border:none;
+    padding:11px; font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.03em;
+    border-radius:2px; cursor:pointer; transition:.15s;
+  }
+  button.action:hover{ background:#0f1a30; }
+  button.action.gold{ background:var(--gold); color:#fff; }
+  button.action.gold:hover{ background:#8f6b21; }
+  button.action.outline{ background:none; border:1px solid var(--ink); color:var(--ink); }
+  button.action.outline:hover{ background:var(--ink); color:var(--paper); }
+
+  .msg{ margin-top:10px; font-size:11.5px; padding:9px 11px; border-radius:2px; display:none; word-break:break-all; line-height:1.5; }
+  .msg.show{ display:block; }
+  .msg.ok{ background:var(--seal-bg); border:1px solid var(--seal); color:var(--seal); }
+  .msg.error{ background:var(--rust-bg); border:1px solid var(--rust); color:var(--rust); }
+
+  .section-title{
+    font-family:var(--serif); font-size:19px; font-weight:600; color:var(--ink);
+    margin:0 0 14px; display:flex; justify-content:space-between; align-items:baseline;
+  }
+  .section-title .count{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); }
+
+  table{ width:100%; border-collapse:collapse; font-size:12px; }
+  th{
+    text-align:left; color:var(--ink-soft); font-weight:600; padding:8px 10px;
+    border-bottom:2px solid var(--ink); font-size:10px; letter-spacing:.03em;
+  }
+  td{ padding:9px 10px; border-bottom:1px solid var(--line); }
+  tr:hover td{ background:var(--paper-2); }
+  .addr{ color:var(--gold); }
+  .dim{ color:var(--ink-soft); font-size:11px; }
+
+  .badge{ display:inline-block; padding:2px 8px; border-radius:2px; font-size:10px; border:1px solid; }
+  .badge.role{ background:var(--paper-2); border-color:var(--line); color:var(--ink-soft); }
+  .badge.signed{ background:var(--seal-bg); border-color:var(--seal); color:var(--seal); }
+  .badge.unsigned{ background:var(--rust-bg); border-color:var(--rust); color:var(--rust); }
+
+  .certificate{
+    border:1px solid var(--ink); border-radius:3px; margin-bottom:16px; background:var(--paper);
+    position:relative; overflow:hidden;
+  }
+  .certificate::before, .certificate::after{
+    content:''; position:absolute; width:14px; height:14px; border:1px solid var(--gold);
+  }
+  .certificate::before{ top:6px; left:6px; border-right:none; border-bottom:none; }
+  .certificate::after{ bottom:6px; right:6px; border-left:none; border-top:none; }
+  .cert-head{
+    display:flex; justify-content:space-between; align-items:center; padding:12px 20px;
+    background:var(--paper-2); border-bottom:1px solid var(--line); flex-wrap:wrap; gap:8px;
+  }
+  .cert-head .block-title{ font-family:var(--serif); font-weight:600; font-size:15px; }
+  .cert-body{ padding:14px 20px; font-size:11px; color:var(--ink-soft); }
+  .hashline{ word-break:break-all; margin:4px 0; }
+  .hashline b{ color:var(--ink); font-weight:600; }
+  .inv-mini{ border-left:2px solid var(--gold); padding:6px 0 6px 12px; margin:10px 0; font-size:11.5px; color:var(--ink); }
+
+  .empty{ color:var(--ink-soft); font-size:12px; padding:24px; text-align:center; border:1px dashed var(--line); border-radius:3px; }
+
+  .fraud-alert{
+    background:var(--rust-bg); border:1px solid var(--rust); color:var(--rust);
+    padding:12px 14px; border-radius:3px; margin-bottom:12px; font-size:12px; line-height:1.6;
+  }
+  .fraud-clear{
+    background:var(--seal-bg); border:1px solid var(--seal); color:var(--seal);
+    padding:12px 14px; border-radius:3px; margin-bottom:12px; font-size:12px;
+  }
+
+  footer{
+    padding:20px 40px; border-top:1px solid var(--line); font-size:11px; color:var(--ink-soft); line-height:1.6;
+  }
+  footer b{ color:var(--gold); }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wordmark">
+    <span class="eyebrow">SIMULATION · NO REAL CURRENCY</span>
+    <h1>GST POTHI <span style="color:var(--gold)">W3</span></h1>
+    <div class="sub">Genuine · Signed · Trustworthy — a Web3 simulation for GST invoice verification and ITC fraud detection.</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:24px;">
+    <div class="header-stats">
+      <div class="stat"><div class="n" id="statBlocks">0</div><div class="l">BLOCKS</div></div>
+      <div class="stat"><div class="n" id="statPending">0</div><div class="l">PENDING</div></div>
+      <div class="stat"><div class="n" id="statDifficulty">0</div><div class="l">DIFFICULTY</div></div>
+    </div>
+    <div class="seal" id="chainSeal">checking…</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="identities" class="active">Identities</button>
+  <button data-tab="invoices">Invoices</button>
+  <button data-tab="mine">Mine &amp; Validate</button>
+  <button data-tab="fraud">ITC &amp; Fraud</button>
+</nav>
+
+<main>
+  <div class="col-forms">
+
+    <!-- IDENTITIES -->
+    <div class="tab-panel active" id="panel-identities">
+      <div class="card">
+        <h3>Register a Business</h3>
+        <div class="desc">Generates a real EC keypair and a unique simulated GSTIN. The private key is shown once — copy it, you'll need it to sign invoices.</div>
+        <label>Business Name</label>
+        <input id="b_name" placeholder="e.g. Acme Textiles">
+        <label>Type</label>
+        <select id="b_type">
+          <option>Manufacturer</option>
+          <option>Distributor</option>
+          <option>Retailer</option>
+          <option>Auditor</option>
+        </select>
+        <button class="action" onclick="createBusiness()">Issue Identity</button>
+        <div class="msg" id="msg_business"></div>
+      </div>
+
+      <div class="card">
+        <h3>Register a Validator Node</h3>
+        <div class="desc">Simulates a regional GST office that independently re-checks the whole chain.</div>
+        <label>Node Name</label>
+        <input id="n_name" placeholder="e.g. Regional-Office-3">
+        <button class="action outline" onclick="createNode()">Spin Up Node</button>
+        <div class="msg" id="msg_node"></div>
+      </div>
+    </div>
+
+    <!-- INVOICES -->
+    <div class="tab-panel" id="panel-invoices">
+      <div class="card">
+        <h3>Issue an Invoice</h3>
+        <div class="desc">A real transaction needs both signatures. The seller signs here; the buyer co-signs below before it can be mined.</div>
+        <label>Business Invoice Number</label>
+        <input id="i_number" placeholder="e.g. INV/2026/0042">
+        <label>Seller</label>
+        <select id="i_seller"></select>
+        <label>Buyer</label>
+        <select id="i_buyer"></select>
+
+        <label style="margin-top:14px;">Line Items</label>
+        <div id="itemRows"></div>
+        <button class="add-row" onclick="addItemRow()">+ Add line item</button>
+
+        <label>Seller Private Key</label>
+        <textarea id="i_priv"></textarea>
+        <button class="action" onclick="createInvoice()">Sign as Seller &amp; Submit</button>
+        <div class="msg" id="msg_invoice"></div>
+      </div>
+
+      <div class="card">
+        <h3>Acknowledge Receipt</h3>
+        <div class="desc">Buyer co-signs an existing invoice to confirm it really happened.</div>
+        <label>Pending Invoice</label>
+        <select id="a_invoice"></select>
+        <label>Buyer</label>
+        <select id="a_buyer"></select>
+        <label>Buyer Private Key</label>
+        <textarea id="a_priv"></textarea>
+        <button class="action gold" onclick="acknowledgeInvoice()">Co-sign as Buyer</button>
+        <div class="msg" id="msg_ack"></div>
+      </div>
+    </div>
+
+    <!-- MINE & VALIDATE -->
+    <div class="tab-panel" id="panel-mine">
+      <div class="card">
+        <h3>Mine a Block</h3>
+        <div class="desc">Bundles every fully-signed invoice and searches for a valid proof-of-work nonce.</div>
+        <label>Mining Node</label>
+        <select id="m_node"></select>
+        <button class="action gold" onclick="mineBlock()">Mine Block</button>
+        <div class="msg" id="msg_mine"></div>
+      </div>
+      <div class="card">
+        <h3>Run Consensus Check</h3>
+        <div class="desc">Every validator node independently re-verifies hashes, proof-of-work, and every signature.</div>
+        <button class="action outline" onclick="runValidate()">Validate Chain</button>
+        <div id="validateResults"></div>
+      </div>
+    </div>
+
+    <!-- ITC & FRAUD -->
+    <div class="tab-panel" id="panel-fraud">
+      <div class="card">
+        <h3>Claim Input Tax Credit</h3>
+        <div class="desc">Only accepted if the invoice is genuine, fully signed, and actually mined into the chain.</div>
+        <label>Claiming Business (Buyer)</label>
+        <select id="c_business"></select>
+        <label>Invoice</label>
+        <select id="c_invoice"></select>
+        <button class="action" onclick="claimItc()">Submit Claim</button>
+        <div class="msg" id="msg_itc"></div>
+      </div>
+      <div class="card">
+        <h3>Fraud Scan</h3>
+        <div class="desc">Checks the confirmed chain for circular trading loops and ITC claims exceeding what was ever invoiced.</div>
+        <button class="action outline" onclick="runFraudCheck()">Scan Confirmed Chain</button>
+        <div id="fraudResults"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-view">
+    <div class="section-title">Registered Businesses <span class="count" id="cntBiz"></span></div>
+    <div id="bizTable" class="card" style="padding:0; overflow:hidden;"></div>
+
+    <div class="section-title" style="margin-top:26px;">ITC Ledger <span class="count" id="cntItc"></span></div>
+    <div id="itcTable" class="card" style="padding:0; overflow:hidden;"></div>
+
+    <div class="section-title" style="margin-top:26px;">Mempool (awaiting confirmation) <span class="count" id="cntPending"></span></div>
+    <div id="pendingWrap"></div>
+
+    <div class="section-title" style="margin-top:26px;">Confirmed Blocks <span class="count" id="cntBlocks"></span></div>
+    <div id="chainWrap"></div>
+  </div>
+</main>
+
+<footer>
+  GST POTHI W3 is a coursework simulation — <b>no real cryptocurrency, GSTIN, or tax filing is involved.</b> Wallet signing uses real ECDSA cryptography to demonstrate how a signed, dual-party invoice resists forgery. Private keys are shown in-browser purely so this demo can sign transactions without a wallet extension — a production system would never do this.
+</footer>
+
+<script>
+let STATE = null;
+let itemRowCount = 0;
+
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+function showMsg(id, text, ok){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg show ' + (ok ? 'ok' : 'error');
+}
+
+async function post(path, params){
+  const body = new URLSearchParams(params).toString();
+  const res = await fetch(path, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+  const json = await res.json();
+  if(!res.ok || json.error) throw new Error(json.error || 'Request failed');
+  return json;
+}
+
+async function getState(){
+  const res = await fetch('/api/state');
+  STATE = await res.json();
+  render();
+}
+
+// ---------- line item rows ----------
+function addItemRow(){
+  itemRowCount++;
+  const id = itemRowCount;
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = 'item-row-' + id;
+  row.innerHTML = `
+    <div><input placeholder="Item name" id="item_name_${id}"></div>
+    <div><input placeholder="Qty" type="number" id="item_qty_${id}"></div>
+    <div><input placeholder="Unit price" type="number" id="item_price_${id}"></div>
+    <div><input placeholder="GST %" type="number" id="item_gst_${id}"></div>
+    <button class="remove" onclick="document.getElementById('item-row-${id}').remove()">✕</button>
+  `;
+  document.getElementById('itemRows').appendChild(row);
+}
+addItemRow();
+
+function collectItemsString(){
+  const rows = document.querySelectorAll('.item-row');
+  const parts = [];
+  rows.forEach(row=>{
+    const id = row.id.replace('item-row-', '');
+    const name = document.getElementById('item_name_'+id).value.trim();
+    const qty = document.getElementById('item_qty_'+id).value;
+    const price = document.getElementById('item_price_'+id).value;
+    const gst = document.getElementById('item_gst_'+id).value;
+    if(name && qty && price && gst !== '') parts.push(`${name}|${qty}|${price}|${gst}`);
+  });
+  return parts.join(';');
+}
+
+// ---------- actions ----------
+async function createBusiness(){
+  try{
+    const name = document.getElementById('b_name').value.trim();
+    const type = document.getElementById('b_type').value;
+    if(!name){ showMsg('msg_business','Enter a business name.', false); return; }
+    const b = await post('/api/business/create', {name, type});
+    showMsg('msg_business', `Identity issued. address=${b.address} — PRIVATE KEY (copy now): ${b.privateKey}`, true);
+    document.getElementById('b_name').value='';
+    await getState();
+  }catch(e){ showMsg('msg_business', e.message, false); }
+}
+
+async function createNode(){
+  try{
+    const name = document.getElementById('n_name').value.trim() || 'Validator';
+    const n = await post('/api/node/create', {name});
+    showMsg('msg_node', `Node online: ${n.name} (id ${n.id})`, true);
+    document.getElementById('n_name').value='';
+    await getState();
+  }catch(e){ showMsg('msg_node', e.message, false); }
+}
+
+async function createInvoice(){
+  try{
+    const businessInvoiceNumber = document.getElementById('i_number').value.trim();
+    const sellerId = document.getElementById('i_seller').value;
+    const buyerId = document.getElementById('i_buyer').value;
+    const items = collectItemsString();
+    const sellerPrivateKey = document.getElementById('i_priv').value.trim();
+    if(!businessInvoiceNumber || !sellerId || !buyerId || !items || !sellerPrivateKey){
+      showMsg('msg_invoice','Fill in the invoice number, seller, buyer, at least one item, and the private key.', false); return;
+    }
+    await post('/api/invoice/create', {businessInvoiceNumber, sellerId, buyerId, items, sellerPrivateKey});
+    showMsg('msg_invoice', 'Invoice signed by seller — now awaiting buyer acknowledgement.', true);
+    document.getElementById('i_number').value=''; document.getElementById('i_priv').value='';
+    await getState();
+  }catch(e){ showMsg('msg_invoice', e.message, false); }
+}
+
+async function acknowledgeInvoice(){
+  try{
+    const invoiceId = document.getElementById('a_invoice').value;
+    const buyerId = document.getElementById('a_buyer').value;
+    const buyerPrivateKey = document.getElementById('a_priv').value.trim();
+    if(!invoiceId || !buyerId || !buyerPrivateKey){ showMsg('msg_ack','Select an invoice, buyer, and enter the private key.', false); return; }
+    await post('/api/invoice/acknowledge', {invoiceId, buyerId, buyerPrivateKey});
+    showMsg('msg_ack', 'Co-signed. Invoice is now fully signed and ready to be mined.', true);
+    document.getElementById('a_priv').value='';
+    await getState();
+  }catch(e){ showMsg('msg_ack', e.message, false); }
+}
+
+async function mineBlock(){
+  try{
+    const nodeId = document.getElementById('m_node').value;
+    if(!nodeId){ showMsg('msg_mine','Register a node first.', false); return; }
+    showMsg('msg_mine', 'Mining… searching for a valid nonce…', true);
+    const r = await post('/api/mine', {nodeId});
+    showMsg('msg_mine', `Block #${r.index} mined — nonce ${r.nonce}.`, true);
+    await getState();
+  }catch(e){ showMsg('msg_mine', e.message, false); }
+}
+
+async function runValidate(){
+  const res = await fetch('/api/validate');
+  const v = await res.json();
+  let html = '<table><tr><th>Node</th><th>Verdict</th></tr>';
+  v.reports.forEach(r=>{
+    html += `<tr><td>${r.node}</td><td style="color:${r.valid?'var(--seal)':'var(--rust)'}">${r.valid?'VALID':'INVALID'} — ${r.message}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('validateResults').innerHTML = html;
+}
+
+async function claimItc(){
+  try{
+    const businessId = document.getElementById('c_business').value;
+    const invoiceId = document.getElementById('c_invoice').value;
+    if(!businessId || !invoiceId){ showMsg('msg_itc','Select a business and an invoice.', false); return; }
+    const r = await post('/api/itc/claim', {businessId, invoiceId});
+    showMsg('msg_itc', r.accepted ? `Claim accepted. Total claimed: Rs.${r.totalClaimed}` : 'Claim rejected — invoice not genuine or not yet mined.', r.accepted);
+    await getState();
+  }catch(e){ showMsg('msg_itc', e.message, false); }
+}
+
+async function runFraudCheck(){
+  const res = await fetch('/api/fraud/check');
+  const r = await res.json();
+  let html = '';
+  if(r.circularTradingDetected){
+    html += '<div class="fraud-alert">⚠ Circular trading pattern detected among confirmed invoices — goods appear to loop back to their original seller.</div>';
+  }
+  if(r.overclaims.length){
+    r.overclaims.forEach(o=>{
+      html += `<div class="fraud-alert">⚠ ${o.name} has claimed Rs.${o.claimed} ITC but was only ever invoiced Rs.${o.actuallyInvoiced}.</div>`;
+    });
+  }
+  if(!r.circularTradingDetected && !r.overclaims.length){
+    html = '<div class="fraud-clear">✓ No circular trading or ITC overclaims detected in the confirmed chain.</div>';
+  }
+  document.getElementById('fraudResults').innerHTML = html;
+}
+
+// ---------- render ----------
+function render(){
+  if(!STATE) return;
+
+  document.getElementById('statBlocks').textContent = STATE.chain.length;
+  document.getElementById('statPending').textContent = STATE.pending.length;
+  document.getElementById('statDifficulty').textContent = STATE.difficulty;
+
+  const seal = document.getElementById('chainSeal');
+  seal.className = 'seal ' + (STATE.chainValid ? 'valid' : 'invalid');
+  seal.textContent = STATE.chainValid ? 'VERIFIED\nGENUINE' : 'CHAIN\nBROKEN';
+
+  const bizOptions = STATE.businesses.map(b=>`<option value="${b.id}">${b.name} (${b.role})</option>`).join('');
+  setOptions('i_seller', bizOptions);
+  setOptions('i_buyer', bizOptions);
+  setOptions('a_buyer', bizOptions);
+  setOptions('c_business', bizOptions);
+
+  const nodeOptions = STATE.nodes.map(n=>`<option value="${n.id}">${n.name}</option>`).join('');
+  setOptions('m_node', nodeOptions);
+
+  const pendingOptions = STATE.pending.map(i=>`<option value="${i.id}">${i.businessInvoiceNumber} (Rs.${i.grandTotal})</option>`).join('');
+  setOptions('a_invoice', pendingOptions);
+
+  const allInvoices = [];
+  STATE.chain.forEach(b => b.invoices.forEach(i => allInvoices.push(i)));
+  const invOptions = allInvoices.map(i=>`<option value="${i.id}">${i.businessInvoiceNumber} — Rs.${i.totalGstAmount} GST</option>`).join('');
+  setOptions('c_invoice', invOptions);
+
+  document.getElementById('cntBiz').textContent = `(${STATE.businesses.length})`;
+  document.getElementById('bizTable').innerHTML = STATE.businesses.length ? bizTable(STATE.businesses) : emptyBox('No businesses registered yet.');
+
+  document.getElementById('cntPending').textContent = `(${STATE.pending.length})`;
+  document.getElementById('pendingWrap').innerHTML = STATE.pending.length ? pendingList(STATE.pending) : emptyBox('Mempool is empty.');
+
+  document.getElementById('cntBlocks').textContent = `(${STATE.chain.length})`;
+  document.getElementById('chainWrap').innerHTML = chainView(STATE.chain.slice().reverse());
+
+  document.getElementById('cntItc').textContent = '';
+  document.getElementById('itcTable').innerHTML = emptyBox('Claim ITC from the "ITC & Fraud" tab to see totals here.');
+}
+
+function setOptions(id, html){
+  const el = document.getElementById(id);
+  const prev = el.value;
+  el.innerHTML = '<option value="">— select —</option>' + html;
+  if([...el.options].some(o=>o.value===prev)) el.value = prev;
+}
+
+function emptyBox(text){ return `<div class="empty">${text}</div>`; }
+
+function bizTable(list){
+  const rows = list.map(b=>`
+    <tr>
+      <td>${b.name}</td>
+      <td><span class="badge role">${b.role}</span></td>
+      <td class="dim">${b.gstin}</td>
+      <td class="addr dim">${b.address}</td>
+    </tr>`).join('');
+  return `<table><tr><th>Name</th><th>Type</th><th>GSTIN</th><th>Address</th></tr>${rows}</table>`;
+}
+
+function pendingList(list){
+  return list.map(i=>`
+    <div class="inv-mini">
+      <b>${i.businessInvoiceNumber}</b> — Rs.${i.grandTotal} total
+      <span class="badge ${i.fullySigned?'signed':'unsigned'}">${i.fullySigned ? 'fully signed' : 'awaiting buyer'}</span>
+      <div class="dim">${i.items.length} item(s) · seller ${i.sellerAddress.slice(0,10)}… → buyer ${i.buyerAddress.slice(0,10)}…</div>
+    </div>`).join('');
+}
+
+function chainView(chain){
+  return chain.map(b=>`
+    <div class="certificate">
+      <div class="cert-head">
+        <span class="block-title">Block #${b.index}</span>
+        <span class="dim">mined by ${b.minedBy} · nonce ${b.nonce}</span>
+      </div>
+      <div class="cert-body">
+        <div class="hashline"><b>hash:</b> ${b.hash}</div>
+        <div class="hashline"><b>prev:</b> ${b.previousHash}</div>
+        ${b.invoices.length ? b.invoices.map(i=>`
+          <div class="inv-mini">${i.businessInvoiceNumber} — Rs.${i.grandTotal}
+            <span class="badge ${i.signaturesValid?'signed':'unsigned'}">${i.signaturesValid?'verified':'unverified'}</span>
+          </div>`).join('') : '<div class="dim">— genesis block, no invoices —</div>'}
+      </div>
+    </div>`).join('');
+}
+
+getState();
+setInterval(getState, 5000);
+</script>
+
+</body>
+</html>

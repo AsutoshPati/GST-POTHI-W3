@@ -272,6 +272,6 @@ These are good, honest talking points for a viva if asked about production-readi
 
 ## Credits
 
-Built as a Class 12 Computer Science project to demonstrate object-oriented programming (inheritance, abstraction, encapsulation) and blockchain/Web3 concepts (cryptographic hashing, digital signatures, proof-of-work, decentralized validation) applied to a real, documented problem in India's GST ecosystem.
+This project is built to demonstrate object-oriented programming (inheritance, abstraction, encapsulation) and blockchain/Web3 concepts (cryptographic hashing, digital signatures, proof-of-work, decentralized validation) applied to a real, documented problem in India's GST ecosystem.
 
 *GST POTHI W3 — Genuine · Signed · Trustworthy.*

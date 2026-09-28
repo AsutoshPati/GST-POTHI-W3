@@ -23,7 +23,6 @@
 12. [Sample Walkthrough](#sample-walkthrough)
 13. [Limitations & Disclaimer](#limitations--disclaimer)
 14. [Future Integration and Possibilities](#future-integration-and-possibilities)
-15. [Credits](#credits)
 
 ---
 

@@ -10,11 +10,7 @@ public class LineItem {
     private final double unitPrice;
     private final double gstRate;
 
-    public LineItem(
-            String itemName,
-            double quantity,
-            double unitPrice,
-            double gstRate) {
+    public LineItem(String itemName, double quantity, double unitPrice, double gstRate) {
         this.itemName = itemName;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
@@ -33,26 +29,12 @@ public class LineItem {
         return getTaxableValue() + getGstAmount();
     }
 
-    public String getItemName() {
-        return itemName;
-    }
+    public String getItemName() { return itemName; }
+    public double getQuantity() { return quantity; }
+    public double getUnitPrice() { return unitPrice; }
+    public double getGstRate() { return gstRate; }
 
-    public double getQuantity() {
-        return quantity;
-    }
-
-    public double getUnitPrice() {
-        return unitPrice;
-    }
-
-    public double getGstRate() {
-        return gstRate;
-    }
-
-    /**
-     * A compact, deterministic string used when this item's data goes into an
-     * invoice hash.
-     */
+    /** A compact, deterministic string used when this item's data goes into an invoice hash. */
     public String toHashString() {
         return itemName + "x" + quantity + "@" + unitPrice + "@" + gstRate + "%";
     }
@@ -60,27 +42,18 @@ public class LineItem {
     @Override
     public String toString() {
         return itemName + ": " + quantity + " x Rs." + unitPrice
-                + " = Rs." + getTaxableValue()
-                + " (+GST " + gstRate + "% = Rs." + getGstAmount() + ")";
+                + " = Rs." + getTaxableValue() + " (+GST " + gstRate + "% = Rs." + getGstAmount() + ")";
     }
 
-    /**
-     * Demo: two line items with different GST rates, showing each is computed
-     * independently.
-     */
+    /** Demo: two line items with different GST rates, showing each is computed independently. */
     public static void main(String[] args) {
         LineItem item1 = new LineItem("Cotton Yarn", 50, 200, 5);
         LineItem item2 = new LineItem("Packaging Boxes", 100, 30, 18);
 
         System.out.println(item1);
-        System.out.println("Hash String: " + item1.toHashString());
-        System.out.println();
         System.out.println(item2);
-        System.out.println("Hash String: " + item2.toHashString());
         System.out.println();
-        System.out.println("Combined taxable value: Rs."
-                + (item1.getTaxableValue() + item2.getTaxableValue()));
-        System.out.println("Combined GST amount   : Rs."
-                + (item1.getGstAmount() + item2.getGstAmount()));
+        System.out.println("Combined taxable value: Rs." + (item1.getTaxableValue() + item2.getTaxableValue()));
+        System.out.println("Combined GST amount   : Rs." + (item1.getGstAmount() + item2.getGstAmount()));
     }
 }

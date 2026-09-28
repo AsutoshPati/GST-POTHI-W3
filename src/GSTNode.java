@@ -1,4 +1,6 @@
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A GSTNode simulates a validator (like a regional tax office) that
@@ -7,20 +9,31 @@ import java.util.List;
  */
 public class GSTNode extends NetworkParticipant {
 
+    /** Every node name already registered (case-insensitive), so no two nodes share a name. */
+    private static final Set<String> registeredNames = ConcurrentHashMap.newKeySet();
+
     private int blocksValidated = 0;
 
     public GSTNode(String name) {
-        super(name);
+        super(validateUniqueName(name));
+    }
+
+    /** Rejects blank names and names already taken by another node. */
+    private static String validateUniqueName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Node name is required");
+        }
+        String trimmed = name.trim();
+        if (!registeredNames.add(trimmed.toLowerCase())) {
+            throw new IllegalArgumentException("A node named '" + trimmed + "' is already registered");
+        }
+        return trimmed;
     }
 
     @Override
-    public String getRole() {
-        return "Validator";
-    }
+    public String getRole() { return "Validator"; }
 
-    public int getBlocksValidated() {
-        return blocksValidated;
-    }
+    public int getBlocksValidated() { return blocksValidated; }
 
     /** Re-validates a whole blockchain and counts it towards this node's tally. */
     public Blockchain.ValidationResult validate(Blockchain chain) {
@@ -44,7 +57,15 @@ public class GSTNode extends NetworkParticipant {
         Blockchain.ValidationResult result = node.validate(chain);
         System.out.println(node);
         System.out.println("Validation result: " + result.message);
-        System.out.println("Blocks validated so far: "
-                + node.getBlocksValidated());
+        System.out.println("Blocks validated so far: " + node.getBlocksValidated());
+
+        System.out.println();
+        System.out.println("Trying to register another node also named 'Validator-Alpha'...");
+        try {
+            new GSTNode("Validator-Alpha");
+            System.out.println("ERROR: duplicate name was NOT rejected!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Correctly rejected: " + e.getMessage());
+        }
     }
 }

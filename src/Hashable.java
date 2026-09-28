@@ -55,32 +55,33 @@ public abstract class Hashable {
      * Demo showing that even a tiny change in the data produces a completely
      * different SHA-256 hash.
      *
-     * Note: Every Hashable also carries its own ID and timestamp; They are
-     * deliberately left OUT of getDataToHash() here, so the amount is the only
-     * thing that differs between the two objects below. That isolates exactly
-     * one variable: changing the amount changes the hash - nothing else about
-     * the two objects differs in what gets hashed.
+     * Note: id and timestamp are deliberately left OUT of getDataToHash()
+     * here, so the amount is the only thing that differs between the two
+     * objects below. That isolates exactly one variable: changing the
+     * amount changes the hash - nothing else about the two objects differs
+     * in what gets hashed.
      */
     public static void main(String[] args) {
         Hashable original = new Hashable() {
             @Override
             protected String getDataToHash() {
-                String dataToHash = "invoice:INV-001|amount:5000";
-                System.out.println("Data: " + dataToHash);
-                return dataToHash;
+                return "invoice:INV-001|amount:5000";
             }
         };
         Hashable tampered = new Hashable() {
             @Override
             protected String getDataToHash() {
-                String dataToHash = "invoice:INV-001|amount:5001";
-                System.out.println("Data: " + dataToHash);
-                return dataToHash;
+                return "invoice:INV-001|amount:5001";
             }
         };
         System.out.println("Original hash : " + original.computeHash());
-        System.out.println();
         System.out.println("Tampered hash : " + tampered.computeHash());
         System.out.println();
+        System.out.println("-> Changing the amount by one rupee produces");
+        System.out.println("   a completely different SHA-256 hash.");
+        System.out.println();
+        System.out.println("(Every Hashable also carries its own id/timestamp -");
+        System.out.println(" used later by Invoice and Block - just kept out");
+        System.out.println(" of this demo's hash so only the amount varies.)");
     }
 }

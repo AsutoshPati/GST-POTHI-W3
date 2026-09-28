@@ -10,8 +10,7 @@ import java.security.MessageDigest;
 public final class CommonUtils {
 
     // Utility class - no instances needed.
-    private CommonUtils() {
-    }
+    private CommonUtils() {}
 
     /**
      * Computes the SHA-256 hash of a string.

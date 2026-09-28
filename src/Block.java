@@ -29,15 +29,11 @@ public class Block extends Hashable {
     @Override
     protected String getDataToHash() {
         StringBuilder invoiceHashes = new StringBuilder();
-        for (Invoice inv : invoices)
-            invoiceHashes.append(inv.computeHash());
+        for (Invoice inv : invoices) invoiceHashes.append(inv.computeHash());
         return index + previousHash + timestamp + nonce + invoiceHashes;
     }
 
-    /**
-     * Proof-of-work: keep changing the nonce until the hash has enough leading
-     * zeros.
-     */
+    /** Proof-of-work: keep changing the nonce until the hash has enough leading zeros. */
     public void mine(int difficulty) {
         String target = "0".repeat(difficulty);
         while (!hash.startsWith(target)) {
@@ -46,33 +42,14 @@ public class Block extends Hashable {
         }
     }
 
-    public int getIndex() {
-        return index;
-    }
+    public int getIndex() { return index; }
+    public String getPreviousHash() { return previousHash; }
+    public List<Invoice> getInvoices() { return invoices; }
+    public String getMinedBy() { return minedBy; }
+    public int getNonce() { return nonce; }
+    public String getHash() { return hash; }
 
-    public String getPreviousHash() {
-        return previousHash;
-    }
-
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public String getMinedBy() {
-        return minedBy;
-    }
-
-    public int getNonce() {
-        return nonce;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    /**
-     * Demo: build a block from two invoices and mine it, showing the nonce search.
-     */
+    /** Demo: build a block from two invoices and mine it, showing the nonce search. */
     public static void main(String[] args) {
         Wallet a = new Wallet(), b = new Wallet();
         Invoice inv1 = new Invoice("INV/A/001", "A", a.getAddress(), "B", b.getAddress(),

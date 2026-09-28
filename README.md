@@ -191,8 +191,8 @@ java -cp out Wallet          # or Invoice, Block, Blockchain, FraudDetector, etc
 | `LineItem` | One product/service line within an invoice — its own quantity, unit price, and GST rate |
 | `Invoice` | A dual-signed invoice made of one or more `LineItem`s, carrying both an internal system `id` and the business's own `businessInvoiceNumber` |
 | `Block` | Bundles invoices, links to the previous block by hash, mined via proof-of-work |
-| `Blockchain` | The ordered chain of blocks; `validate()` checks hash linkage, proof-of-work, and every invoice's signatures |
-| `ITCLedger` | Tracks ITC claimed per business; only accepts a claim backed by a genuine, mined invoice |
+| `Blockchain` | The ordered chain of blocks; `validate()` reports the first broken block, and `validateAll()` gives a per-block report (used by the Chain Tree) |
+| `ITCLedger` | Keeps every ITC claim as a record; accepts a claim only from the invoice's buyer, for a genuine mined invoice, once per invoice |
 | `FraudDetector` | Scans confirmed invoices for circular trading loops and ITC overclaims |
 | `Json` | Hand-rolled JSON writer and form-data parser — no external dependency |
 | `Storage` | Saves/loads a JSON snapshot of app state to disk (placeholder for a future SQLite version) |
@@ -202,12 +202,15 @@ java -cp out Wallet          # or Invoice, Block, Blockchain, FraudDetector, etc
 
 ## How to Use
 
-The dashboard has four tabs:
+The dashboard has five tabs. Each tab shows **only** what belongs to it, and returns to its default state (empty forms, no leftover messages, no open pop-ups) whenever you leave it.
 
-1. **Identities** — Register a business (generates a real keypair + a unique simulated GSTIN; copy the private key shown, you'll need it) and register validator nodes.
-2. **Invoices** — Issue an invoice with one or more line items (each with its own quantity, price, and GST rate), signed by the seller. Then, separately, have the buyer acknowledge/co-sign it — an invoice isn't valid until both signatures exist.
-3. **Mine & Validate** — Mine all fully-signed pending invoices into a new block, and run a full consensus check where every validator node independently re-verifies the chain.
-4. **ITC & Fraud** — Claim Input Tax Credit against a mined invoice, and run a fraud scan across the confirmed chain for circular trading or ITC overclaims.
+1. **Identities** — Register businesses (real keypair + unique simulated GSTIN; copy the private key shown) and validator nodes. The right side lists only registered businesses and nodes. Names must be unique (case-insensitive).
+2. **Invoices** — Issue a multi-line-item invoice signed by the seller, then have the buyer co-sign it. The right side lists every invoice; **click any row to open it as a full invoice document** (parties, itemised GST table, totals, signature stamps). A wrong private key is rejected immediately, and a seller cannot reuse an invoice number.
+3. **Mine & Validate** — Mine fully-signed invoices into a block and run the multi-node consensus check. The right side shows the mempool and the confirmed blocks.
+4. **ITC & Fraud** — Claim Input Tax Credit (only the invoice's buyer, only once per invoice, only if mined and genuine; already-claimed invoices are greyed out) and run the fraud scan. The right side shows the full ITC claims ledger.
+5. **Chain Tree** — The blockchain drawn as a tree: each block is a trunk node, its invoices are leaves. Green = valid and trusted, red = the broken block, amber = individually fine but sitting *after* a broken block, so untrusted. Click a block or invoice for detail.
+
+**Why a broken block stays broken:** blockchain trust is sequential. If block 1 is invalid, adding more valid blocks afterwards does not repair it, and every later block is unverifiable too. The system therefore keeps reporting the first broken block. The Chain Tree makes this visible.
 
 ---
 
@@ -272,6 +275,6 @@ These are good, honest talking points for a viva if asked about production-readi
 
 ## Credits
 
-This project is built to demonstrate object-oriented programming (inheritance, abstraction, encapsulation) and blockchain/Web3 concepts (cryptographic hashing, digital signatures, proof-of-work, decentralized validation) applied to a real, documented problem in India's GST ecosystem.
+Built as a Class 12 Computer Science project to demonstrate object-oriented programming (inheritance, abstraction, encapsulation) and blockchain/Web3 concepts (cryptographic hashing, digital signatures, proof-of-work, decentralized validation) applied to a real, documented problem in India's GST ecosystem.
 
 *GST POTHI W3 — Genuine · Signed · Trustworthy.*

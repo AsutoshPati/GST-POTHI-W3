@@ -5,251 +5,274 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GST POTHI W3 — Digital Trust Ledger</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --ink:      #1B2A4A;
-    --ink-soft: #3C4A68;
-    --paper:    #F2ECDA;
-    --paper-2:  #E9E0C8;
-    --line:     #D8CDA8;
-    --gold:     #A97C28;
-    --gold-dim: #C9A257;
-    --seal:     #2F6F52;
-    --seal-bg:  #E4EEE6;
-    --rust:     #9C3B2E;
-    --rust-bg:  #F3E3DF;
-    --serif: 'Fraunces', serif;
+    --bg:        #F6F7F4;
+    --surface:   #FFFFFF;
+    --surface-2: #F0F2EC;
+    --border:    #E3E6DE;
+    --border-2:  #CDD2C6;
+    --text:      #16211C;
+    --text-dim:  #5C6B62;
+    --text-faint:#93A099;
+    --emerald:   #0E9F6E;
+    --emerald-bg:#E3F7EE;
+    --gold:      #AD7C22;
+    --gold-bg:   #FBF1DC;
+    --rose:      #D8434B;
+    --rose-bg:   #FCE9EA;
+    --amber:     #C2660F;
+    --amber-bg:  #FBEADB;
+    --display: 'Space Grotesk', sans-serif;
+    --sans: 'Inter', sans-serif;
     --mono: 'JetBrains Mono', monospace;
+    --shadow: 0 1px 2px rgba(22,33,28,0.04), 0 6px 20px rgba(22,33,28,0.05);
   }
 
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background: var(--paper);
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(27,42,74,0.035) 28px);
-    color:var(--ink);
-    font-family:var(--mono);
-    font-size:14px;
-    min-height:100vh;
-  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); font-size:14px; min-height:100vh; }
+  ::selection{ background:var(--emerald); color:#fff; }
+  a{ color:var(--emerald); }
 
-  ::selection{ background:var(--gold-dim); color:var(--ink); }
-
-  /* ---------- masthead ---------- */
-  header.masthead{
-    padding:36px 40px 22px;
-    border-bottom:3px double var(--ink);
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:20px;
+  /* ---------- top bar ---------- */
+  header.topbar{
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px; gap:20px; flex-wrap:wrap;
+    background:rgba(246,247,244,0.85); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
   }
-  .wordmark{ display:flex; flex-direction:column; gap:2px; }
-  .wordmark .eyebrow{ font-size:11px; letter-spacing:.08em; color:var(--gold); }
-  .wordmark h1{
-    font-family:var(--serif); font-optical-sizing:auto; font-weight:600;
-    font-size:38px; margin:0; color:var(--ink); letter-spacing:.01em;
-  }
-  .wordmark .sub{ font-size:12px; color:var(--ink-soft); max-width:46ch; line-height:1.5; }
-
-  /* the seal - our one signature element */
-  .seal{
-    width:84px; height:84px; border-radius:50%;
-    border:2px solid var(--ink); position:relative; flex-shrink:0;
+  .brand{ display:flex; align-items:center; gap:11px; }
+  .brand .mark{
+    width:34px; height:34px; border-radius:9px; flex-shrink:0;
+    background:linear-gradient(135deg, var(--emerald), #0A7857);
     display:flex; align-items:center; justify-content:center;
-    font-family:var(--serif); font-size:11px; text-align:center; line-height:1.3;
-    background:radial-gradient(circle at 35% 30%, #fff8, transparent 60%), var(--paper-2);
+    font-family:var(--display); font-weight:700; font-size:15px; color:#fff;
+    box-shadow:0 4px 14px rgba(14,159,110,0.3);
   }
-  .seal::before{
-    content:''; position:absolute; inset:6px; border-radius:50%;
-    border:1px dashed var(--ink-soft);
-  }
-  .seal.valid{ color:var(--seal); border-color:var(--seal); }
-  .seal.valid::before{ border-color:var(--seal); }
-  .seal.invalid{ color:var(--rust); border-color:var(--rust); animation:shake .4s; }
-  .seal.invalid::before{ border-color:var(--rust); }
-  @keyframes shake{ 0%,100%{transform:rotate(0);} 25%{transform:rotate(-4deg);} 75%{transform:rotate(4deg);} }
+  .brand .name{ font-family:var(--display); font-weight:700; font-size:17px; letter-spacing:-.01em; }
+  .brand .name span{ color:var(--gold); }
+  .brand .tag{ font-size:10.5px; color:var(--text-dim); letter-spacing:.03em; }
 
-  .header-stats{ display:flex; gap:28px; align-items:center; }
-  .stat{ text-align:right; }
-  .stat .n{ font-family:var(--serif); font-size:22px; font-weight:600; color:var(--ink); }
-  .stat .l{ font-size:10px; color:var(--ink-soft); letter-spacing:.04em; }
+  .status-pill{
+    display:flex; align-items:center; gap:9px; padding:8px 16px; border-radius:100px;
+    border:1px solid var(--border-2); background:var(--surface); font-family:var(--mono); font-size:11.5px;
+    box-shadow:var(--shadow);
+  }
+  .status-pill .dot{ width:8px; height:8px; border-radius:50%; background:var(--text-faint); }
+  .status-pill.valid .dot{ background:var(--emerald); box-shadow:0 0 8px rgba(14,159,110,0.6); animation:pulse 1.8s infinite; }
+  .status-pill.invalid .dot{ background:var(--rose); box-shadow:0 0 8px rgba(216,67,75,0.5); }
+  .status-pill.valid{ color:var(--emerald); }
+  .status-pill.invalid{ color:var(--rose); }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+  /* ---------- stat strip ---------- */
+  .stat-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:20px 32px 4px; }
+  @media (max-width: 860px){ .stat-strip{ grid-template-columns:repeat(2,1fr); } }
+  .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); }
+  .stat-card .n{ font-family:var(--display); font-size:26px; font-weight:700; }
+  .stat-card .l{ font-size:10.5px; color:var(--text-dim); margin-top:3px; letter-spacing:.03em; }
 
   /* ---------- tabs ---------- */
-  nav.tabs{
-    display:flex; gap:2px; padding:0 40px; border-bottom:1px solid var(--line);
-    background:var(--paper-2); flex-wrap:wrap;
-  }
+  nav.tabs{ display:flex; gap:6px; padding:16px 32px 0; flex-wrap:wrap; }
   nav.tabs button{
-    background:none; border:none; color:var(--ink-soft); font-family:var(--mono);
-    font-size:12.5px; padding:13px 20px; cursor:pointer;
-    border-bottom:3px solid transparent; transition:.15s;
+    display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border);
+    color:var(--text-dim); font-family:var(--sans); font-weight:600; font-size:12.5px; padding:10px 18px;
+    border-radius:11px; cursor:pointer; transition:.15s; box-shadow:var(--shadow);
   }
-  nav.tabs button:hover{ color:var(--ink); }
-  nav.tabs button.active{ color:var(--ink); border-bottom-color:var(--gold); font-weight:700; }
+  nav.tabs button svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  nav.tabs button:hover{ color:var(--text); border-color:var(--border-2); }
+  nav.tabs button.active{
+    color:#fff; background:linear-gradient(135deg, var(--emerald), #0A7857); border-color:transparent;
+  }
 
   /* ---------- layout ---------- */
-  main{ display:grid; grid-template-columns:380px 1fr; gap:0; }
-  @media (max-width: 980px){ main{grid-template-columns:1fr;} }
-  .col-forms{ padding:26px; border-right:1px solid var(--line); }
-  .col-view{ padding:26px 34px; }
+  .tab-panel{ display:none; padding:20px 32px 40px; }
+  .tab-panel.active{ display:block; }
+  .two-col{ display:grid; grid-template-columns:390px 1fr; gap:26px; align-items:start; }
+  @media (max-width: 980px){ .two-col{ grid-template-columns:1fr; } }
 
-  .card{
-    background:var(--paper); border:1px solid var(--line); border-radius:3px;
-    padding:20px; margin-bottom:20px; position:relative;
-  }
-  .card h3{
-    margin:0 0 6px; font-family:var(--serif); font-size:18px; font-weight:600; color:var(--ink);
-  }
-  .card .desc{ font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:14px; }
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:var(--shadow); }
+  .card h3{ margin:0 0 6px; font-family:var(--display); font-size:16.5px; font-weight:600; display:flex; align-items:center; gap:9px; }
+  .card h3 svg{ width:17px; height:17px; stroke:var(--emerald); fill:none; stroke-width:1.8; }
+  .card .desc{ font-size:11.5px; color:var(--text-dim); line-height:1.6; margin-bottom:16px; }
 
-  label{ display:block; font-size:11px; color:var(--ink-soft); margin:10px 0 4px; }
+  label{ display:block; font-size:11px; color:var(--text-dim); margin:11px 0 5px; font-weight:600; }
   input, select, textarea{
-    width:100%; background:#fff; border:1px solid var(--line); color:var(--ink);
-    padding:8px 10px; border-radius:2px; font-family:var(--mono); font-size:12.5px;
+    width:100%; background:var(--bg); border:1px solid var(--border-2); color:var(--text);
+    padding:10px 12px; border-radius:9px; font-family:var(--sans); font-size:13px;
   }
-  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--gold); }
-  textarea{ resize:vertical; min-height:48px; }
+  input::placeholder, textarea::placeholder{ color:var(--text-faint); }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--emerald); box-shadow:0 0 0 3px var(--emerald-bg); }
+  textarea{ resize:vertical; min-height:50px; font-family:var(--mono); font-size:11.5px; }
 
   .item-row{ display:grid; grid-template-columns:1.6fr .7fr .9fr .6fr auto; gap:6px; margin-top:8px; align-items:end; }
-  .item-row input{ font-size:11.5px; padding:7px 8px; }
-  .item-row button.remove{
-    background:none; border:1px solid var(--rust); color:var(--rust); border-radius:2px;
-    padding:7px 9px; cursor:pointer; font-family:var(--mono); font-size:11px;
-  }
+  .item-row input{ font-size:11.5px; padding:8px 9px; }
+  .item-row button.remove{ background:var(--rose-bg); border:1px solid #f0b7bb; color:var(--rose); border-radius:8px; padding:8px 10px; cursor:pointer; font-size:11px; }
   button.add-row{
-    margin-top:8px; background:none; border:1px dashed var(--ink-soft); color:var(--ink-soft);
-    padding:7px 12px; border-radius:2px; cursor:pointer; font-family:var(--mono); font-size:11.5px; width:100%;
+    margin-top:9px; background:none; border:1px dashed var(--border-2); color:var(--text-dim);
+    padding:9px 12px; border-radius:9px; cursor:pointer; font-family:var(--sans); font-size:11.5px; width:100%; font-weight:600;
   }
-  button.add-row:hover{ border-color:var(--gold); color:var(--gold); }
+  button.add-row:hover{ border-color:var(--emerald); color:var(--emerald); }
 
   button.action{
-    margin-top:14px; width:100%; background:var(--ink); color:var(--paper); border:none;
-    padding:11px; font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.03em;
-    border-radius:2px; cursor:pointer; transition:.15s;
+    margin-top:16px; width:100%; border:none; padding:12px; border-radius:10px;
+    font-family:var(--sans); font-weight:700; font-size:12.5px; cursor:pointer; transition:.15s;
+    background:linear-gradient(135deg, var(--emerald), #0A7857); color:#fff;
+    box-shadow:0 6px 16px rgba(14,159,110,0.25);
   }
-  button.action:hover{ background:#0f1a30; }
-  button.action.gold{ background:var(--gold); color:#fff; }
-  button.action.gold:hover{ background:#8f6b21; }
-  button.action.outline{ background:none; border:1px solid var(--ink); color:var(--ink); }
-  button.action.outline:hover{ background:var(--ink); color:var(--paper); }
+  button.action:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+  button.action.gold{ background:linear-gradient(135deg, #C99A38, var(--gold)); box-shadow:0 6px 16px rgba(173,124,34,0.22); }
+  button.action.outline{ background:var(--surface); border:1px solid var(--border-2); color:var(--text); box-shadow:none; }
+  button.action.outline:hover{ border-color:var(--emerald); color:var(--emerald); transform:none; }
 
-  .msg{ margin-top:10px; font-size:11.5px; padding:9px 11px; border-radius:2px; display:none; word-break:break-all; line-height:1.5; }
+  .msg{ margin-top:11px; font-size:11.5px; padding:10px 13px; border-radius:9px; display:none; word-break:break-all; line-height:1.55; }
   .msg.show{ display:block; }
-  .msg.ok{ background:var(--seal-bg); border:1px solid var(--seal); color:var(--seal); }
-  .msg.error{ background:var(--rust-bg); border:1px solid var(--rust); color:var(--rust); }
+  .msg.ok{ background:var(--emerald-bg); border:1px solid #a9e6cc; color:#0A7857; }
+  .msg.error{ background:var(--rose-bg); border:1px solid #f0b7bb; color:var(--rose); }
 
-  .section-title{
-    font-family:var(--serif); font-size:19px; font-weight:600; color:var(--ink);
-    margin:0 0 14px; display:flex; justify-content:space-between; align-items:baseline;
-  }
-  .section-title .count{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); }
+  .section-title{ font-family:var(--display); font-size:18px; font-weight:600; margin:0 0 14px; display:flex; justify-content:space-between; align-items:baseline; }
+  .section-title .count{ font-family:var(--mono); font-size:11px; color:var(--text-dim); font-weight:400; }
 
   table{ width:100%; border-collapse:collapse; font-size:12px; }
-  th{
-    text-align:left; color:var(--ink-soft); font-weight:600; padding:8px 10px;
-    border-bottom:2px solid var(--ink); font-size:10px; letter-spacing:.03em;
-  }
-  td{ padding:9px 10px; border-bottom:1px solid var(--line); }
-  tr:hover td{ background:var(--paper-2); }
-  .addr{ color:var(--gold); }
-  .dim{ color:var(--ink-soft); font-size:11px; }
+  th{ text-align:left; color:var(--text-dim); font-weight:600; padding:9px 12px; border-bottom:1px solid var(--border); font-size:10px; letter-spacing:.04em; text-transform:uppercase; }
+  td{ padding:11px 12px; border-bottom:1px solid var(--border); }
+  tr.clickable{ cursor:pointer; }
+  tr.clickable:hover td{ background:var(--surface-2); }
+  tr.claimed-row td{ opacity:.55; }
+  .addr{ color:var(--gold); font-family:var(--mono); }
+  .dim{ color:var(--text-dim); font-size:11px; }
 
-  .badge{ display:inline-block; padding:2px 8px; border-radius:2px; font-size:10px; border:1px solid; }
-  .badge.role{ background:var(--paper-2); border-color:var(--line); color:var(--ink-soft); }
-  .badge.signed{ background:var(--seal-bg); border-color:var(--seal); color:var(--seal); }
-  .badge.unsigned{ background:var(--rust-bg); border-color:var(--rust); color:var(--rust); }
+  .badge{ display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:600; border:1px solid; }
+  .badge.role{ background:var(--surface-2); border-color:var(--border-2); color:var(--text-dim); }
+  .badge.signed{ background:var(--emerald-bg); border-color:#a9e6cc; color:#0A7857; }
+  .badge.unsigned{ background:var(--rose-bg); border-color:#f0b7bb; color:var(--rose); }
+  .badge.claimed{ background:var(--surface-2); border-color:var(--border-2); color:var(--text-faint); }
 
-  .certificate{
-    border:1px solid var(--ink); border-radius:3px; margin-bottom:16px; background:var(--paper);
-    position:relative; overflow:hidden;
-  }
-  .certificate::before, .certificate::after{
-    content:''; position:absolute; width:14px; height:14px; border:1px solid var(--gold);
-  }
-  .certificate::before{ top:6px; left:6px; border-right:none; border-bottom:none; }
-  .certificate::after{ bottom:6px; right:6px; border-left:none; border-top:none; }
-  .cert-head{
-    display:flex; justify-content:space-between; align-items:center; padding:12px 20px;
-    background:var(--paper-2); border-bottom:1px solid var(--line); flex-wrap:wrap; gap:8px;
-  }
-  .cert-head .block-title{ font-family:var(--serif); font-weight:600; font-size:15px; }
-  .cert-body{ padding:14px 20px; font-size:11px; color:var(--ink-soft); }
-  .hashline{ word-break:break-all; margin:4px 0; }
-  .hashline b{ color:var(--ink); font-weight:600; }
-  .inv-mini{ border-left:2px solid var(--gold); padding:6px 0 6px 12px; margin:10px 0; font-size:11.5px; color:var(--ink); }
+  .block-card{ border:1px solid var(--border); border-radius:16px; margin-bottom:14px; overflow:hidden; background:var(--surface); position:relative; box-shadow:var(--shadow); }
+  .block-card.card-invalid::before{ background:linear-gradient(180deg, var(--rose), #a02c33); }
+  .block-card::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg, var(--emerald), var(--gold)); }
+  .block-head{ display:flex; justify-content:space-between; align-items:center; padding:13px 20px 13px 22px; background:var(--surface-2); border-bottom:1px solid var(--border); flex-wrap:wrap; gap:8px; }
+  .block-head .block-title{ font-family:var(--display); font-weight:600; font-size:14.5px; }
+  .block-body{ padding:15px 20px 15px 22px; font-size:11px; color:var(--text-dim); }
+  .hashline{ word-break:break-all; margin:4px 0; font-family:var(--mono); }
+  .hashline b{ color:var(--text); font-weight:600; font-family:var(--sans); }
+  .inv-mini{ border-left:2px solid var(--gold); padding:7px 0 7px 12px; margin:10px 0; font-size:11.5px; color:var(--text); }
 
-  .empty{ color:var(--ink-soft); font-size:12px; padding:24px; text-align:center; border:1px dashed var(--line); border-radius:3px; }
+  .empty{ color:var(--text-dim); font-size:12px; padding:28px; text-align:center; border:1px dashed var(--border-2); border-radius:14px; }
 
-  .fraud-alert{
-    background:var(--rust-bg); border:1px solid var(--rust); color:var(--rust);
-    padding:12px 14px; border-radius:3px; margin-bottom:12px; font-size:12px; line-height:1.6;
-  }
-  .fraud-clear{
-    background:var(--seal-bg); border:1px solid var(--seal); color:var(--seal);
-    padding:12px 14px; border-radius:3px; margin-bottom:12px; font-size:12px;
-  }
+  .fraud-alert{ background:var(--rose-bg); border:1px solid #f0b7bb; color:var(--rose); padding:13px 15px; border-radius:12px; margin-bottom:12px; font-size:12px; line-height:1.6; }
+  .fraud-clear{ background:var(--emerald-bg); border:1px solid #a9e6cc; color:#0A7857; padding:13px 15px; border-radius:12px; margin-bottom:12px; font-size:12px; }
 
-  footer{
-    padding:20px 40px; border-top:1px solid var(--line); font-size:11px; color:var(--ink-soft); line-height:1.6;
-  }
+  footer{ padding:22px 32px; border-top:1px solid var(--border); font-size:11px; color:var(--text-dim); line-height:1.6; }
   footer b{ color:var(--gold); }
 
-  .tab-panel{ display:none; }
-  .tab-panel.active{ display:block; }
+  /* ---------- invoice document modal ---------- */
+  .modal-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(22,33,28,0.45); backdrop-filter:blur(3px);
+    z-index:100; align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto;
+  }
+  .modal-backdrop.show{ display:flex; }
+  .invoice-doc{
+    background:var(--surface); width:100%; max-width:620px; border-radius:18px; box-shadow:0 24px 60px rgba(22,33,28,0.28);
+    overflow:hidden;
+  }
+  .invoice-doc-head{
+    background:linear-gradient(135deg, var(--emerald), #0A7857); color:#fff; padding:26px 30px; position:relative;
+  }
+  .invoice-doc-head .close{
+    position:absolute; top:16px; right:18px; background:rgba(255,255,255,0.18); border:none; color:#fff;
+    width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px;
+  }
+  .invoice-doc-head .num{ font-family:var(--display); font-size:22px; font-weight:700; }
+  .invoice-doc-head .sub{ font-size:11.5px; opacity:.85; margin-top:4px; font-family:var(--mono); }
+  .invoice-doc-body{ padding:26px 30px; }
+  .doc-parties{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:22px; }
+  .doc-party .l{ font-size:10px; color:var(--text-dim); letter-spacing:.05em; text-transform:uppercase; margin-bottom:4px; }
+  .doc-party .n{ font-family:var(--display); font-weight:600; font-size:14.5px; }
+  .doc-party .a{ font-family:var(--mono); font-size:10.5px; color:var(--text-faint); margin-top:2px; word-break:break-all; }
+  table.doc-items{ width:100%; border-collapse:collapse; margin-bottom:18px; }
+  table.doc-items th{ background:var(--surface-2); font-size:10px; }
+  table.doc-items td{ font-size:12px; }
+  .doc-totals{ margin-left:auto; width:260px; }
+  .doc-totals .row{ display:flex; justify-content:space-between; padding:6px 0; font-size:12.5px; color:var(--text-dim); }
+  .doc-totals .row.grand{ border-top:1px solid var(--border); margin-top:6px; padding-top:10px; font-family:var(--display); font-weight:700; font-size:16px; color:var(--text); }
+  .doc-sigs{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:22px; }
+  .doc-sig{ border:1px dashed var(--border-2); border-radius:12px; padding:14px; text-align:center; }
+  .doc-sig.ok{ border-color:#a9e6cc; background:var(--emerald-bg); }
+  .doc-sig .stamp{ font-family:var(--display); font-weight:700; font-size:12px; }
+  .doc-sig.ok .stamp{ color:#0A7857; }
+  .doc-sig .who{ font-size:10.5px; color:var(--text-dim); margin-top:3px; }
+
+  /* ---------- tree view ---------- */
+  .tree-legend{ display:flex; gap:18px; flex-wrap:wrap; margin-bottom:18px; font-size:11.5px; color:var(--text-dim); }
+  .tree-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .tree-legend i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  #treeSvgWrap{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:10px; box-shadow:var(--shadow); overflow-x:auto; }
+  #treeDetail{ margin-top:16px; }
 </style>
 </head>
 <body>
 
-<header class="masthead">
-  <div class="wordmark">
-    <span class="eyebrow">SIMULATION · NO REAL CURRENCY</span>
-    <h1>GST POTHI <span style="color:var(--gold)">W3</span></h1>
-    <div class="sub">Genuine · Signed · Trustworthy — a Web3 simulation for GST invoice verification and ITC fraud detection.</div>
-  </div>
-  <div style="display:flex; align-items:center; gap:24px;">
-    <div class="header-stats">
-      <div class="stat"><div class="n" id="statBlocks">0</div><div class="l">BLOCKS</div></div>
-      <div class="stat"><div class="n" id="statPending">0</div><div class="l">PENDING</div></div>
-      <div class="stat"><div class="n" id="statDifficulty">0</div><div class="l">DIFFICULTY</div></div>
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">₹</div>
+    <div>
+      <div class="name">GST POTHI <span>W3</span></div>
+      <div class="tag">GENUINE · SIGNED · TRUSTWORTHY</div>
     </div>
-    <div class="seal" id="chainSeal">checking…</div>
   </div>
+  <div class="status-pill" id="chainPill"><span class="dot"></span><span id="chainPillText">connecting…</span></div>
 </header>
 
+<div class="stat-strip">
+  <div class="stat-card"><div class="n" id="statBlocks">0</div><div class="l">CONFIRMED BLOCKS</div></div>
+  <div class="stat-card"><div class="n" id="statPending">0</div><div class="l">PENDING INVOICES</div></div>
+  <div class="stat-card"><div class="n" id="statBiz">0</div><div class="l">REGISTERED BUSINESSES</div></div>
+  <div class="stat-card"><div class="n" id="statDifficulty">0</div><div class="l">MINING DIFFICULTY</div></div>
+</div>
+
 <nav class="tabs">
-  <button data-tab="identities" class="active">Identities</button>
-  <button data-tab="invoices">Invoices</button>
-  <button data-tab="mine">Mine &amp; Validate</button>
-  <button data-tab="fraud">ITC &amp; Fraud</button>
+  <button data-tab="identities" class="active">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+    Identities
+  </button>
+  <button data-tab="invoices">
+    <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6M9 8h3"/></svg>
+    Invoices
+  </button>
+  <button data-tab="mine">
+    <svg viewBox="0 0 24 24"><path d="M3 21l7-7"/><path d="M14 3l7 7-4 4-7-7z"/></svg>
+    Mine &amp; Validate
+  </button>
+  <button data-tab="fraud">
+    <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
+    ITC &amp; Fraud
+  </button>
+  <button data-tab="tree">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M12 6v3M12 9L6 10M12 9l6 1M6 14v4M18 14v4"/></svg>
+    Chain Tree
+  </button>
 </nav>
 
-<main>
-  <div class="col-forms">
-
-    <!-- IDENTITIES -->
-    <div class="tab-panel active" id="panel-identities">
+<!-- ================= IDENTITIES ================= -->
+<div class="tab-panel active" id="panel-identities">
+  <div class="two-col">
+    <div>
       <div class="card">
-        <h3>Register a Business</h3>
+        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Register a Business</h3>
         <div class="desc">Generates a real EC keypair and a unique simulated GSTIN. The private key is shown once — copy it, you'll need it to sign invoices.</div>
         <label>Business Name</label>
         <input id="b_name" placeholder="e.g. Acme Textiles">
         <label>Type</label>
-        <select id="b_type">
-          <option>Manufacturer</option>
-          <option>Distributor</option>
-          <option>Retailer</option>
-          <option>Auditor</option>
-        </select>
+        <select id="b_type"><option>Manufacturer</option><option>Distributor</option><option>Retailer</option><option>Auditor</option></select>
         <button class="action" onclick="createBusiness()">Issue Identity</button>
         <div class="msg" id="msg_business"></div>
       </div>
-
       <div class="card">
-        <h3>Register a Validator Node</h3>
+        <h3><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Register a Validator Node</h3>
         <div class="desc">Simulates a regional GST office that independently re-checks the whole chain.</div>
         <label>Node Name</label>
         <input id="n_name" placeholder="e.g. Regional-Office-3">
@@ -257,114 +280,161 @@
         <div class="msg" id="msg_node"></div>
       </div>
     </div>
+    <div>
+      <div class="section-title">Registered Businesses <span class="count" id="cntBiz"></span></div>
+      <div id="bizTable" class="card" style="padding:0; overflow:hidden;"></div>
+      <div class="section-title" style="margin-top:24px;">Registered Nodes <span class="count" id="cntNodes"></span></div>
+      <div id="nodeTable" class="card" style="padding:0; overflow:hidden;"></div>
+    </div>
+  </div>
+</div>
 
-    <!-- INVOICES -->
-    <div class="tab-panel" id="panel-invoices">
+<!-- ================= INVOICES ================= -->
+<div class="tab-panel" id="panel-invoices">
+  <div class="two-col">
+    <div>
       <div class="card">
-        <h3>Issue an Invoice</h3>
+        <h3><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6M9 8h3"/></svg>Issue an Invoice</h3>
         <div class="desc">A real transaction needs both signatures. The seller signs here; the buyer co-signs below before it can be mined.</div>
         <label>Business Invoice Number</label>
         <input id="i_number" placeholder="e.g. INV/2026/0042">
-        <label>Seller</label>
-        <select id="i_seller"></select>
-        <label>Buyer</label>
-        <select id="i_buyer"></select>
-
-        <label style="margin-top:14px;">Line Items</label>
+        <label>Seller</label><select id="i_seller"></select>
+        <label>Buyer</label><select id="i_buyer"></select>
+        <label style="margin-top:15px;">Line Items</label>
         <div id="itemRows"></div>
         <button class="add-row" onclick="addItemRow()">+ Add line item</button>
-
         <label>Seller Private Key</label>
         <textarea id="i_priv"></textarea>
         <button class="action" onclick="createInvoice()">Sign as Seller &amp; Submit</button>
         <div class="msg" id="msg_invoice"></div>
       </div>
-
       <div class="card">
-        <h3>Acknowledge Receipt</h3>
+        <h3><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Acknowledge Receipt</h3>
         <div class="desc">Buyer co-signs an existing invoice to confirm it really happened.</div>
-        <label>Pending Invoice</label>
-        <select id="a_invoice"></select>
-        <label>Buyer</label>
-        <select id="a_buyer"></select>
+        <label>Pending Invoice</label><select id="a_invoice"></select>
+        <label>Buyer</label><select id="a_buyer"></select>
         <label>Buyer Private Key</label>
         <textarea id="a_priv"></textarea>
         <button class="action gold" onclick="acknowledgeInvoice()">Co-sign as Buyer</button>
         <div class="msg" id="msg_ack"></div>
       </div>
     </div>
+    <div>
+      <div class="section-title">All Invoices <span class="count" id="cntInvoices"></span></div>
+      <div class="dim" style="margin:-8px 0 12px;">Click a row to open it like a full invoice document.</div>
+      <div id="invoiceListTable" class="card" style="padding:0; overflow:hidden;"></div>
+    </div>
+  </div>
+</div>
 
-    <!-- MINE & VALIDATE -->
-    <div class="tab-panel" id="panel-mine">
+<!-- ================= MINE & VALIDATE ================= -->
+<div class="tab-panel" id="panel-mine">
+  <div class="two-col">
+    <div>
       <div class="card">
-        <h3>Mine a Block</h3>
+        <h3><svg viewBox="0 0 24 24"><path d="M3 21l7-7"/><path d="M14 3l7 7-4 4-7-7z"/></svg>Mine a Block</h3>
         <div class="desc">Bundles every fully-signed invoice and searches for a valid proof-of-work nonce.</div>
-        <label>Mining Node</label>
-        <select id="m_node"></select>
+        <label>Mining Node</label><select id="m_node"></select>
         <button class="action gold" onclick="mineBlock()">Mine Block</button>
         <div class="msg" id="msg_mine"></div>
       </div>
       <div class="card">
-        <h3>Run Consensus Check</h3>
+        <h3><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Run Consensus Check</h3>
         <div class="desc">Every validator node independently re-verifies hashes, proof-of-work, and every signature.</div>
         <button class="action outline" onclick="runValidate()">Validate Chain</button>
         <div id="validateResults"></div>
       </div>
     </div>
+    <div>
+      <div class="section-title">Mempool (awaiting confirmation) <span class="count" id="cntPending"></span></div>
+      <div id="pendingWrap"></div>
+      <div class="section-title" style="margin-top:26px;">Confirmed Blocks <span class="count" id="cntBlocks"></span></div>
+      <div id="chainWrap"></div>
+    </div>
+  </div>
+</div>
 
-    <!-- ITC & FRAUD -->
-    <div class="tab-panel" id="panel-fraud">
+<!-- ================= ITC & FRAUD ================= -->
+<div class="tab-panel" id="panel-fraud">
+  <div class="two-col">
+    <div>
       <div class="card">
-        <h3>Claim Input Tax Credit</h3>
-        <div class="desc">Only accepted if the invoice is genuine, fully signed, and actually mined into the chain.</div>
-        <label>Claiming Business (Buyer)</label>
-        <select id="c_business"></select>
-        <label>Invoice</label>
-        <select id="c_invoice"></select>
+        <h3><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Claim Input Tax Credit</h3>
+        <div class="desc">Only accepted if the invoice is genuine, fully signed, actually mined, and not already claimed. Already-claimed invoices are grayed out below.</div>
+        <label>Claiming Business (Buyer)</label><select id="c_business"></select>
+        <label>Invoice</label><select id="c_invoice"></select>
         <button class="action" onclick="claimItc()">Submit Claim</button>
         <div class="msg" id="msg_itc"></div>
       </div>
       <div class="card">
-        <h3>Fraud Scan</h3>
+        <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.5 18a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5L13.7 3.9a1 1 0 0 0-1.7 0z"/></svg>Fraud Scan</h3>
         <div class="desc">Checks the confirmed chain for circular trading loops and ITC claims exceeding what was ever invoiced.</div>
         <button class="action outline" onclick="runFraudCheck()">Scan Confirmed Chain</button>
         <div id="fraudResults"></div>
       </div>
     </div>
-
+    <div>
+      <div class="section-title">ITC Claims Ledger <span class="count" id="cntClaims"></span></div>
+      <div id="claimsTable" class="card" style="padding:0; overflow:hidden;"></div>
+    </div>
   </div>
+</div>
 
-  <div class="col-view">
-    <div class="section-title">Registered Businesses <span class="count" id="cntBiz"></span></div>
-    <div id="bizTable" class="card" style="padding:0; overflow:hidden;"></div>
-
-    <div class="section-title" style="margin-top:26px;">ITC Ledger <span class="count" id="cntItc"></span></div>
-    <div id="itcTable" class="card" style="padding:0; overflow:hidden;"></div>
-
-    <div class="section-title" style="margin-top:26px;">Mempool (awaiting confirmation) <span class="count" id="cntPending"></span></div>
-    <div id="pendingWrap"></div>
-
-    <div class="section-title" style="margin-top:26px;">Confirmed Blocks <span class="count" id="cntBlocks"></span></div>
-    <div id="chainWrap"></div>
+<!-- ================= CHAIN TREE ================= -->
+<div class="tab-panel" id="panel-tree">
+  <div class="section-title">Blockchain Tree</div>
+  <div class="dim" style="margin:-8px 0 14px;">Each trunk node is a block; its leaves are the invoices mined inside it. Click any node for detail.</div>
+  <div class="tree-legend">
+    <span><i style="background:var(--emerald)"></i> Valid &amp; trusted</span>
+    <span><i style="background:var(--rose)"></i> Broken block (tampering / bad signature / bad link)</span>
+    <span><i style="background:var(--amber)"></i> Individually fine, but downstream of a broken block — untrusted</span>
+    <span><i style="background:var(--gold)"></i> Invoice leaf</span>
   </div>
-</main>
+  <div id="treeSvgWrap"></div>
+  <div id="treeDetail"></div>
+</div>
 
 <footer>
   GST POTHI W3 is a coursework simulation — <b>no real cryptocurrency, GSTIN, or tax filing is involved.</b> Wallet signing uses real ECDSA cryptography to demonstrate how a signed, dual-party invoice resists forgery. Private keys are shown in-browser purely so this demo can sign transactions without a wallet extension — a production system would never do this.
 </footer>
 
+<!-- ================= INVOICE DOCUMENT MODAL ================= -->
+<div class="modal-backdrop" id="invoiceModal" onclick="if(event.target===this) closeInvoiceDoc()">
+  <div class="invoice-doc" id="invoiceDocContent"></div>
+</div>
+
 <script>
 let STATE = null;
 let itemRowCount = 0;
 
+// ---------- tab switching with full state reset ----------
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+
+    // reset EVERYTHING transient: messages, result panels, open modal, tree detail
+    document.querySelectorAll('.msg').forEach(el => { el.textContent = ''; el.className = 'msg'; });
+    ['validateResults','fraudResults','treeDetail'].forEach(id=>{
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '';
+    });
+    closeInvoiceDoc();
+    resetForms();
+
+    if (btn.dataset.tab === 'tree') renderTree();
   });
 });
+
+// put every form back to its default (empty inputs, first dropdown option, one blank line-item row)
+function resetForms(){
+  document.querySelectorAll('.tab-panel input, .tab-panel textarea').forEach(el => { el.value = ''; });
+  document.querySelectorAll('.tab-panel select').forEach(el => { el.selectedIndex = 0; });
+  const rows = document.getElementById('itemRows');
+  if (rows) { rows.innerHTML = ''; addItemRow(); }
+}
 
 function showMsg(id, text, ok){
   const el = document.getElementById(id);
@@ -405,7 +475,7 @@ function addItemRow(){
 addItemRow();
 
 function collectItemsString(){
-  const rows = document.querySelectorAll('.item-row');
+  const rows = document.querySelectorAll('#itemRows .item-row');
   const parts = [];
   rows.forEach(row=>{
     const id = row.id.replace('item-row-', '');
@@ -487,7 +557,7 @@ async function runValidate(){
   const v = await res.json();
   let html = '<table><tr><th>Node</th><th>Verdict</th></tr>';
   v.reports.forEach(r=>{
-    html += `<tr><td>${r.node}</td><td style="color:${r.valid?'var(--seal)':'var(--rust)'}">${r.valid?'VALID':'INVALID'} — ${r.message}</td></tr>`;
+    html += `<tr><td>${r.node}</td><td style="color:${r.valid?'var(--emerald)':'var(--rose)'}">${r.valid?'VALID':'INVALID'} — ${r.message}</td></tr>`;
   });
   html += '</table>';
   document.getElementById('validateResults').innerHTML = html;
@@ -499,7 +569,7 @@ async function claimItc(){
     const invoiceId = document.getElementById('c_invoice').value;
     if(!businessId || !invoiceId){ showMsg('msg_itc','Select a business and an invoice.', false); return; }
     const r = await post('/api/itc/claim', {businessId, invoiceId});
-    showMsg('msg_itc', r.accepted ? `Claim accepted. Total claimed: Rs.${r.totalClaimed}` : 'Claim rejected — invoice not genuine or not yet mined.', r.accepted);
+    showMsg('msg_itc', r.accepted ? `Claim accepted. Total claimed by this business: Rs.${r.totalClaimed}` : 'Claim rejected — not genuine, not yet mined, not the actual buyer, or already claimed against this exact invoice.', r.accepted);
     await getState();
   }catch(e){ showMsg('msg_itc', e.message, false); }
 }
@@ -508,18 +578,64 @@ async function runFraudCheck(){
   const res = await fetch('/api/fraud/check');
   const r = await res.json();
   let html = '';
-  if(r.circularTradingDetected){
-    html += '<div class="fraud-alert">⚠ Circular trading pattern detected among confirmed invoices — goods appear to loop back to their original seller.</div>';
-  }
-  if(r.overclaims.length){
-    r.overclaims.forEach(o=>{
-      html += `<div class="fraud-alert">⚠ ${o.name} has claimed Rs.${o.claimed} ITC but was only ever invoiced Rs.${o.actuallyInvoiced}.</div>`;
-    });
-  }
-  if(!r.circularTradingDetected && !r.overclaims.length){
-    html = '<div class="fraud-clear">✓ No circular trading or ITC overclaims detected in the confirmed chain.</div>';
-  }
+  if(r.circularTradingDetected) html += '<div class="fraud-alert">⚠ Circular trading pattern detected among confirmed invoices — goods appear to loop back to their original seller.</div>';
+  if(r.overclaims.length) r.overclaims.forEach(o=> html += `<div class="fraud-alert">⚠ ${o.name} has claimed Rs.${o.claimed} ITC but was only ever invoiced Rs.${o.actuallyInvoiced}.</div>`);
+  if(!r.circularTradingDetected && !r.overclaims.length) html = '<div class="fraud-clear">✓ No circular trading or ITC overclaims detected in the confirmed chain.</div>';
   document.getElementById('fraudResults').innerHTML = html;
+}
+
+// ---------- invoice document modal ----------
+function findInvoiceById(id){
+  for (const inv of STATE.pending) if (inv.id === id) return inv;
+  for (const b of STATE.chain) for (const inv of b.invoices) if (inv.id === id) return inv;
+  return null;
+}
+
+function openInvoiceDoc(id){
+  const inv = findInvoiceById(id);
+  if (!inv) return;
+  const itemRows = inv.items.map(it => `
+    <tr>
+      <td>${it.itemName}</td>
+      <td>${it.quantity}</td>
+      <td>Rs.${it.unitPrice}</td>
+      <td>${it.gstRate}%</td>
+      <td>Rs.${it.taxableValue}</td>
+      <td>Rs.${it.gstAmount}</td>
+    </tr>`).join('');
+
+  document.getElementById('invoiceDocContent').innerHTML = `
+    <div class="invoice-doc-head">
+      <button class="close" onclick="closeInvoiceDoc()">✕</button>
+      <div class="num">${inv.businessInvoiceNumber}</div>
+      <div class="sub">internal id: ${inv.id}</div>
+    </div>
+    <div class="invoice-doc-body">
+      <div class="doc-parties">
+        <div class="doc-party"><div class="l">Seller</div><div class="n">${inv.sellerName}</div><div class="a">${inv.sellerAddress}</div></div>
+        <div class="doc-party"><div class="l">Buyer</div><div class="n">${inv.buyerName}</div><div class="a">${inv.buyerAddress}</div></div>
+      </div>
+      <table class="doc-items">
+        <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>GST</th><th>Taxable</th><th>GST Amt</th></tr>
+        ${itemRows}
+      </table>
+      <div class="doc-totals">
+        <div class="row"><span>Taxable Value</span><span>Rs.${inv.totalTaxableValue}</span></div>
+        <div class="row"><span>Total GST</span><span>Rs.${inv.totalGstAmount}</span></div>
+        <div class="row grand"><span>Grand Total</span><span>Rs.${inv.grandTotal}</span></div>
+      </div>
+      <div class="doc-sigs">
+        <div class="doc-sig ${inv.fullySigned ? 'ok' : ''}"><div class="stamp">${inv.fullySigned ? '✓ SELLER SIGNED' : 'AWAITING SELLER'}</div><div class="who">${inv.sellerName}</div></div>
+        <div class="doc-sig ${inv.fullySigned ? 'ok' : ''}"><div class="stamp">${inv.fullySigned ? '✓ BUYER SIGNED' : 'AWAITING BUYER'}</div><div class="who">${inv.buyerName}</div></div>
+      </div>
+      ${inv.alreadyClaimed ? '<div class="fraud-clear" style="margin-top:16px;">ITC has already been claimed against this invoice.</div>' : ''}
+    </div>
+  `;
+  document.getElementById('invoiceModal').classList.add('show');
+}
+
+function closeInvoiceDoc(){
+  document.getElementById('invoiceModal').classList.remove('show');
 }
 
 // ---------- render ----------
@@ -528,11 +644,12 @@ function render(){
 
   document.getElementById('statBlocks').textContent = STATE.chain.length;
   document.getElementById('statPending').textContent = STATE.pending.length;
+  document.getElementById('statBiz').textContent = STATE.businesses.length;
   document.getElementById('statDifficulty').textContent = STATE.difficulty;
 
-  const seal = document.getElementById('chainSeal');
-  seal.className = 'seal ' + (STATE.chainValid ? 'valid' : 'invalid');
-  seal.textContent = STATE.chainValid ? 'VERIFIED\nGENUINE' : 'CHAIN\nBROKEN';
+  const pill = document.getElementById('chainPill');
+  pill.className = 'status-pill ' + (STATE.chainValid ? 'valid' : 'invalid');
+  document.getElementById('chainPillText').textContent = STATE.chainValid ? 'Chain Verified' : 'Chain Broken';
 
   const bizOptions = STATE.businesses.map(b=>`<option value="${b.id}">${b.name} (${b.role})</option>`).join('');
   setOptions('i_seller', bizOptions);
@@ -548,20 +665,29 @@ function render(){
 
   const allInvoices = [];
   STATE.chain.forEach(b => b.invoices.forEach(i => allInvoices.push(i)));
-  const invOptions = allInvoices.map(i=>`<option value="${i.id}">${i.businessInvoiceNumber} — Rs.${i.totalGstAmount} GST</option>`).join('');
-  setOptions('c_invoice', invOptions);
+  const claimableOptions = allInvoices.map(i=>`<option value="${i.id}" ${i.alreadyClaimed?'disabled':''}>${i.businessInvoiceNumber} — Rs.${i.totalGstAmount} GST${i.alreadyClaimed?' (already claimed)':''}</option>`).join('');
+  setOptions('c_invoice', claimableOptions);
 
+  // Page 1: identities only
   document.getElementById('cntBiz').textContent = `(${STATE.businesses.length})`;
   document.getElementById('bizTable').innerHTML = STATE.businesses.length ? bizTable(STATE.businesses) : emptyBox('No businesses registered yet.');
+  document.getElementById('cntNodes').textContent = `(${STATE.nodes.length})`;
+  document.getElementById('nodeTable').innerHTML = STATE.nodes.length ? nodeTable(STATE.nodes) : emptyBox('No validator nodes registered yet.');
 
+  // Page 2: invoices only
+  const allForList = [...STATE.pending.map(i=>({...i, status:'pending'})), ...allInvoices.map(i=>({...i, status:'mined'}))];
+  document.getElementById('cntInvoices').textContent = `(${allForList.length})`;
+  document.getElementById('invoiceListTable').innerHTML = allForList.length ? invoiceListTable(allForList) : emptyBox('No invoices yet — issue one on the left.');
+
+  // Page 3: mempool + blocks
   document.getElementById('cntPending').textContent = `(${STATE.pending.length})`;
   document.getElementById('pendingWrap').innerHTML = STATE.pending.length ? pendingList(STATE.pending) : emptyBox('Mempool is empty.');
-
   document.getElementById('cntBlocks').textContent = `(${STATE.chain.length})`;
   document.getElementById('chainWrap').innerHTML = chainView(STATE.chain.slice().reverse());
 
-  document.getElementById('cntItc').textContent = '';
-  document.getElementById('itcTable').innerHTML = emptyBox('Claim ITC from the "ITC & Fraud" tab to see totals here.');
+  // Page 4: claims
+  document.getElementById('cntClaims').textContent = `(${STATE.itcClaims.length})`;
+  document.getElementById('claimsTable').innerHTML = STATE.itcClaims.length ? claimsTable(STATE.itcClaims) : emptyBox('No ITC claims submitted yet.');
 }
 
 function setOptions(id, html){
@@ -575,13 +701,25 @@ function emptyBox(text){ return `<div class="empty">${text}</div>`; }
 
 function bizTable(list){
   const rows = list.map(b=>`
-    <tr>
-      <td>${b.name}</td>
-      <td><span class="badge role">${b.role}</span></td>
-      <td class="dim">${b.gstin}</td>
-      <td class="addr dim">${b.address}</td>
-    </tr>`).join('');
+    <tr><td>${b.name}</td><td><span class="badge role">${b.role}</span></td><td class="dim">${b.gstin}</td><td class="addr">${b.address}</td></tr>`).join('');
   return `<table><tr><th>Name</th><th>Type</th><th>GSTIN</th><th>Address</th></tr>${rows}</table>`;
+}
+
+function nodeTable(list){
+  const rows = list.map(n=>`<tr><td>${n.name}</td><td class="dim">${n.id}</td><td>${n.blocksValidated}</td></tr>`).join('');
+  return `<table><tr><th>Name</th><th>Node ID</th><th>Blocks Validated</th></tr>${rows}</table>`;
+}
+
+function invoiceListTable(list){
+  const rows = list.map(i=>`
+    <tr class="clickable ${i.alreadyClaimed?'claimed-row':''}" onclick="openInvoiceDoc('${i.id}')">
+      <td>${i.businessInvoiceNumber}</td>
+      <td>${i.sellerName} → ${i.buyerName}</td>
+      <td>Rs.${i.grandTotal}</td>
+      <td><span class="badge ${i.fullySigned?'signed':'unsigned'}">${i.status === 'mined' ? 'mined' : (i.fullySigned ? 'fully signed' : 'awaiting buyer')}</span></td>
+      <td>${i.alreadyClaimed ? '<span class="badge claimed">ITC claimed</span>' : ''}</td>
+    </tr>`).join('');
+  return `<table><tr><th>Invoice #</th><th>Parties</th><th>Total</th><th>Status</th><th></th></tr>${rows}</table>`;
 }
 
 function pendingList(list){
@@ -589,20 +727,21 @@ function pendingList(list){
     <div class="inv-mini">
       <b>${i.businessInvoiceNumber}</b> — Rs.${i.grandTotal} total
       <span class="badge ${i.fullySigned?'signed':'unsigned'}">${i.fullySigned ? 'fully signed' : 'awaiting buyer'}</span>
-      <div class="dim">${i.items.length} item(s) · seller ${i.sellerAddress.slice(0,10)}… → buyer ${i.buyerAddress.slice(0,10)}…</div>
+      <div class="dim">${i.items.length} item(s) · ${i.sellerName} → ${i.buyerName}</div>
     </div>`).join('');
 }
 
 function chainView(chain){
   return chain.map(b=>`
-    <div class="certificate">
-      <div class="cert-head">
-        <span class="block-title">Block #${b.index}</span>
+    <div class="block-card ${b.isValid ? '' : 'card-invalid'}">
+      <div class="block-head">
+        <span class="block-title">Block #${b.index} ${b.isValid ? '' : '⚠'}</span>
         <span class="dim">mined by ${b.minedBy} · nonce ${b.nonce}</span>
       </div>
-      <div class="cert-body">
+      <div class="block-body">
         <div class="hashline"><b>hash:</b> ${b.hash}</div>
         <div class="hashline"><b>prev:</b> ${b.previousHash}</div>
+        ${!b.isValid ? `<div class="fraud-alert" style="margin-top:8px;">${b.reason}</div>` : ''}
         ${b.invoices.length ? b.invoices.map(i=>`
           <div class="inv-mini">${i.businessInvoiceNumber} — Rs.${i.grandTotal}
             <span class="badge ${i.signaturesValid?'signed':'unsigned'}">${i.signaturesValid?'verified':'unverified'}</span>
@@ -611,8 +750,85 @@ function chainView(chain){
     </div>`).join('');
 }
 
+function claimsTable(list){
+  const rows = list.slice().reverse().map(c=>`
+    <tr><td>${c.businessName}</td><td class="dim">${c.businessInvoiceNumber}</td><td>Rs.${c.amount}</td><td class="dim">${new Date(c.timestamp).toLocaleString()}</td></tr>`).join('');
+  return `<table><tr><th>Claimed By</th><th>Invoice</th><th>Amount</th><th>When</th></tr>${rows}</table>`;
+}
+
+// ---------- Chain Tree ----------
+function renderTree(){
+  if (!STATE) return;
+  const chain = STATE.chain;
+  const wrap = document.getElementById('treeSvgWrap');
+
+  // cascading trust: once one block is broken, every later block is "untrusted" even if individually fine
+  let brokenSeen = false;
+  const trust = chain.map(b=>{
+    if (!b.isValid) { brokenSeen = true; return 'broken'; }
+    return brokenSeen ? 'untrusted' : 'valid';
+  });
+
+  const colFor = t => t === 'broken' ? 'var(--rose)' : (t === 'untrusted' ? 'var(--amber)' : 'var(--emerald)');
+
+  const nodeW = 150, gapX = 60, trunkY = 60, leafY = 150;
+  const r = 26;
+  const width = Math.max(700, chain.length * (nodeW + gapX));
+  let maxLeaves = 0;
+  chain.forEach(b => maxLeaves = Math.max(maxLeaves, b.invoices.length));
+  const height = leafY + maxLeaves * 46 + 60;
+
+  let svg = `<svg viewBox="0 0 ${width} ${height}" width="${width}" style="display:block; margin:0 auto;">`;
+
+  chain.forEach((b, i) => {
+    const cx = 70 + i * (nodeW + gapX);
+    if (i > 0) {
+      const px = 70 + (i-1) * (nodeW + gapX);
+      svg += `<line x1="${px + r}" y1="${trunkY}" x2="${cx - r}" y2="${trunkY}" stroke="${colFor(trust[i])}" stroke-width="2.5"/>`;
+    }
+  });
+
+  chain.forEach((b, i) => {
+    const cx = 70 + i * (nodeW + gapX);
+    const col = colFor(trust[i]);
+    svg += `<g style="cursor:pointer" onclick="showBlockDetail(${i})">
+      <circle cx="${cx}" cy="${trunkY}" r="${r}" fill="${col}" opacity="0.15" stroke="${col}" stroke-width="2"/>
+      <text x="${cx}" y="${trunkY+5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="${col}">B${b.index}</text>
+    </g>`;
+
+    b.invoices.forEach((inv, j) => {
+      const ly = leafY + j * 46;
+      svg += `<line x1="${cx}" y1="${trunkY + r}" x2="${cx}" y2="${ly}" stroke="var(--border-2)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      const label = inv.businessInvoiceNumber.length > 14 ? inv.businessInvoiceNumber.slice(0,13)+'…' : inv.businessInvoiceNumber;
+      svg += `<g style="cursor:pointer" onclick="showInvoiceLeafDetail('${inv.id}')">
+        <rect x="${cx - 62}" y="${ly - 14}" width="124" height="28" rx="8" fill="var(--gold-bg)" stroke="var(--gold)" stroke-width="1.3"/>
+        <text x="${cx}" y="${ly + 4}" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#7a5817">${label}</text>
+      </g>`;
+    });
+  });
+
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+}
+
+function showBlockDetail(index){
+  const b = STATE.chain[index];
+  document.getElementById('treeDetail').innerHTML = `
+    <div class="card">
+      <h3>Block #${b.index} ${b.isValid ? '✓' : '⚠'}</h3>
+      <div class="hashline"><b>hash:</b> ${b.hash}</div>
+      <div class="hashline"><b>prev:</b> ${b.previousHash}</div>
+      <div class="dim" style="margin-top:8px;">mined by ${b.minedBy} · nonce ${b.nonce} · ${b.invoices.length} invoice(s)</div>
+      ${!b.isValid ? `<div class="fraud-alert" style="margin-top:10px;">${b.reason}</div>` : ''}
+    </div>`;
+}
+
+function showInvoiceLeafDetail(id){
+  openInvoiceDoc(id);
+}
+
 getState();
-setInterval(getState, 5000);
+setInterval(()=>{ getState(); if(document.getElementById('panel-tree').classList.contains('active')) renderTree(); }, 5000);
 </script>
 
 </body>

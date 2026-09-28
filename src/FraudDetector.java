@@ -1,8 +1,4 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Simple fraud checks over a batch of invoices: circular trading
@@ -11,40 +7,29 @@ import java.util.Set;
  */
 public class FraudDetector {
 
-    /**
-     * Detects a seller->buyer address cycle (A sells to B, B to C, C back to A).
-     */
+    /** Detects a seller->buyer address cycle (A sells to B, B to C, C back to A). */
     public static boolean detectCircularTrading(List<Invoice> invoices) {
         Map<String, String> nextHop = new HashMap<>();
-        for (Invoice inv : invoices)
-            nextHop.put(inv.getSellerAddress(), inv.getBuyerAddress());
+        for (Invoice inv : invoices) nextHop.put(inv.getSellerAddress(), inv.getBuyerAddress());
 
         for (String start : nextHop.keySet()) {
             Set<String> visited = new HashSet<>();
             String current = start;
             while (nextHop.containsKey(current)) {
-                if (!visited.add(current))
-                    break;
+                if (!visited.add(current)) break;
                 current = nextHop.get(current);
-                if (current.equals(start))
-                    return true;
+                if (current.equals(start)) return true;
             }
         }
         return false;
     }
 
-    /**
-     * Flags a business whose claimed ITC exceeds the GST it was ever legitimately
-     * invoiced.
-     */
+    /** Flags a business whose claimed ITC exceeds the GST it was ever legitimately invoiced. */
     public static boolean detectOverclaimedITC(double claimedTotal, double actuallyInvoicedTotal) {
         return claimedTotal > actuallyInvoicedTotal;
     }
 
-    /**
-     * Demo: three invoices forming a fraud loop A->B->C->A, plus an overclaim
-     * example.
-     */
+    /** Demo: three invoices forming a fraud loop A->B->C->A, plus an overclaim example. */
     public static void main(String[] args) {
         Wallet a = new Wallet(), b = new Wallet(), c = new Wallet();
 
